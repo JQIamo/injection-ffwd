@@ -90,26 +90,5 @@ void adc_dac_setup(){
 }
 
 
-typedef enum state_t { RESET, LOCKED, SAMPLE_UP, SAMPLE_DOWN, ACQUIRE, OFF } state_t; 
-typedef void (*state_callback_t)();
-
-typedef struct SM SM;
-
-struct SM {
-    state_t state;
-    SM * next_state;
-    state_callback_t callback;
-};
-
-SM * current_state;
-
-void run_sm(){
-    // run current state
-    (current_state->callback)();
-}
-
-
-
-
 
 

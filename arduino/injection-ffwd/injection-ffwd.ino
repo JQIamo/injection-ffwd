@@ -1,4 +1,4 @@
-#include "DueTimer.h"
+#include "DueTimer/DueTimer.h"
 #include "injection-init.h"
 
 /*
@@ -22,6 +22,7 @@ command structure: 'p 0 15' -> set param 0 (pzt_min) to 15
 7 pzt_offset_delta
 */
 
+//DueTimer timer(0);
 
 volatile bool ramp_dir = 1; // 1 = rising; 0 = falling
 volatile bool end_scan_flag = 0;    // flag for end of single period of pzt scan
@@ -75,7 +76,7 @@ void advance_waveform(){
     pzt_o = pzt_min;
     ramp_dir = 1;
 
-    Timer4.stop();
+    Timer1.stop();
     NVIC_DisableIRQ(ADC_IRQn);
     end_scan_flag = 1;
   }
@@ -95,7 +96,7 @@ void reset_waveform(){
 void query_cavity(){
   reset_waveform(); // reset counters, buffers, etc.
   NVIC_EnableIRQ(ADC_IRQn); // turn on ADC interrupts
-  Timer4.start();   // Timer4 is attached to advance_waveform; enable to start PZT waveform generation
+  Timer1.start();   // timer is attached to advance_waveform; enable to start PZT waveform generation
 }
 
 
@@ -118,8 +119,11 @@ void setup() {
   analogWrite(DAC0, pzt_min);
   analogWrite(DAC1, fb_o);
   
+ // timer = DueTimer(0);
+
+  
   // attach timer interrupt for PZT waveform
-  Timer4.attachInterrupt(advance_waveform).setPeriod(PZT_TIMESTEP);
+  Timer1.attachInterrupt(advance_waveform).setPeriod(PZT_TIMESTEP);
   
   // initialize state machine...?
   state = 0;
